@@ -4,6 +4,9 @@ const cors = require('cors');
 
 app.use(cors());
 app.use(express.json()); 
+const mongoose = require('mongoose');
+
+mongoose.connect('mongodb+srv://nathancardoso:Stnm112m6FDO9nzr@cluster0.oihvcna.mongodb.net/?retryWrites=true&w=majority')
 
 app.post('/register', (req,res) => {
     const {username, password} = req.body;
