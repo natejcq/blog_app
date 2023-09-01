@@ -6,12 +6,13 @@ export default function LoginPage(){
     
     async function login(ev){
         ev.preventDefault();
-        await fetch('http://localhost:4000/login', {
+        const response = await fetch('http://localhost:4000/login', {
             method: 'POST',
             body: JSON.stringify({username, password}),
-            headers: {'Content-Type':'application/json'},
+            headers: {'Content-Type': 'application/json'}
         })
-    }
+    }    
+
     return(
         <form className="login" onSubmit={login}>
             <input 
