@@ -5,12 +5,14 @@ const mongoose = require('mongoose');
 const User = require('./models/User');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
+const cookieParser = require('cookie-parser');
 
 const secret = 'asdfe45we45w345wegw345werjktjwertkj';
 const salt = bcrypt.genSaltSync(10);
 
-app.use(cors());
+app.use(cors({credentials: true, origin: 'http://localhost:3000'}));
 app.use(express.json()); 
+app.use(cookieParser()); 
 
 mongoose.connect('mongodb+srv://nathancardoso:Stnm112m6FDO9nzr@cluster0.oihvcna.mongodb.net/?retryWrites=true&w=majority')
 
@@ -25,6 +27,10 @@ app.post('/register', async (req,res) => {
     catch(err){
         res.status(400).json(err);
     }
+});
+
+app.get('/profile'  , (req, res) => {
+    res.json(req.cookies)
 });
 
 app.post('/login', async (req, res) => {
@@ -51,7 +57,7 @@ app.post('/login', async (req, res) => {
         }
 
 
-        
+
     } catch (error) {
         // Handle other errors
         console.error(error);
