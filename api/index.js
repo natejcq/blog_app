@@ -43,7 +43,7 @@ app.post('/login', async (req, res) => {
             ///res.status(200).json({ message: 'Login successful' });
             jwt.sign({username, id:userDoc._id}, secret, {}, (err, token) => {
                 if (err) throw err;
-                res.json(token); 
+                res.cookie("token", token).json('ok');
             });
         } else {
             // Wrong password
