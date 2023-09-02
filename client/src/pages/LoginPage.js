@@ -1,12 +1,12 @@
 import {useState} from "react";
 
 export default function LoginPage(){
-    const [username, setUsername] = useState(' ');
-    const [password, setPassword] = useState(' ');
-    
+    const [username, setUsername] = useState('');
+    const [password, setPassword] = useState('');
+
     async function login(ev){
         ev.preventDefault();
-        const response = await fetch('http://localhost:4000/login', {
+        await fetch('http://localhost:4000/login', {
             method: 'POST',
             body: JSON.stringify({username, password}),
             headers: {'Content-Type': 'application/json'}
