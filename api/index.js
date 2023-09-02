@@ -49,6 +49,9 @@ app.post('/login', async (req, res) => {
             // Wrong password
             res.status(400).json({ error: 'Wrong credentials' });
         }
+
+
+        
     } catch (error) {
         // Handle other errors
         console.error(error);
