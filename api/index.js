@@ -78,13 +78,22 @@ app.post('/logout',  (req, res) => {
     res.cookie('token', '').json('ok');
 });
 
-app.post('/post', uploadMiddleware.single('file'), (req, res) => {
+app.post('/post', uploadMiddleware.single('file'), async(req, res) => {
     const {originalname, path} = req.file;
     const parts = originalname.split('.');
     const ext = parts[parts.length - 1];
     const newpath=path+"."+ext
     fs.renameSync(path, newpath);
-    res.json({ext});
+    
+    const {title, summary, content} = req.body;
+    const postDoc = await Post.create({
+        title: title,
+        summary: summary,
+        content: content,
+        cover: newpath
+    })
+    
+    res.json(postDoc);
 })
 
 app.listen(4000);
