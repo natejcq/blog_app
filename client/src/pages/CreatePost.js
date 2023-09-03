@@ -21,7 +21,8 @@ export default function CreatePost(){
         const response = await fetch('http://localhost:4000/post', {
             method: 'POST',
             //Will be easier to send all the data not as a JSON but as a form data 
-            body: data
+            body: data,
+            credentials: 'include',
         });
         if (response.ok){
             setRedirect(true);
