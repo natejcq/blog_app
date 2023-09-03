@@ -1,5 +1,4 @@
-import ReactQuill from "react-quill"
-import "react-quill/dist/quill.snow.css"
+import { Editor } from '../Editor';
 import { useState } from "react";
 import {Navigate} from "react-router-dom";
 
@@ -32,31 +31,6 @@ export default function CreatePost(){
     if(redirect){
         return <Navigate to='/' />
     }
-
-    const toolbarOptions = [
-        ['bold', 'italic', 'underline', 'strike'],        // toggled buttons
-        ['blockquote', 'code-block'],
-      
-        [{ 'header': 1 }, { 'header': 2 }],               // custom button values
-        [{ 'list': 'ordered'}, { 'list': 'bullet' }],
-        [{ 'script': 'sub'}, { 'script': 'super' }],      // superscript/subscript
-        [{ 'indent': '-1'}, { 'indent': '+1' }],          // outdent/indent
-        [{ 'direction': 'rtl' }],                         // text direction
-      
-        [{ 'size': ['small', false, 'large', 'huge'] }],  // custom dropdown
-        [{ 'header': [1, 2, 3, 4, 5, 6, false] }],
-      
-        [{ 'color': [] }, { 'background': [] }],          // dropdown with defaults from theme
-        [{ 'font': [] }],
-        [{ 'align': [] }],
-      
-        ['clean']                                         // remove formatting button
-    ];
-    const moduless = {
-        toolbar: toolbarOptions,
-    }
-    
-    
     return(
         <form onSubmit={createNewPost}>
             <input type="title" 
@@ -73,11 +47,7 @@ export default function CreatePost(){
 
                 onChange={ev => setFiles(ev.target.files)}    
             />
-            <ReactQuill 
-                value={content} 
-                onChange = {newValue => setContent(newValue)}     
-                modules={moduless}
-            />
+             <Editor onChange={setContent} value={content}/>
             <button style={{marginTop:'5px'}}>Create Post</button>
         </form>
     )

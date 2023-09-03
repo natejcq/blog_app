@@ -65,6 +65,7 @@ div.post p.info{
 }
 div.post p.info a.author{
   color:#333;
+  font-size: 1rem;
 }
 div.post p.summary{
   margin:10px 0;
