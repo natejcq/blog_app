@@ -1,4 +1,4 @@
-import { Editor } from '../Editor';
+import Editor from '../Editor';
 import { useState } from "react";
 import {Navigate} from "react-router-dom";
 
@@ -29,7 +29,7 @@ export default function CreatePost(){
     }
 
     if(redirect){
-        return <Navigate to='/' />
+        return <Navigate to={'/post/'} />
     }
     return(
         <form onSubmit={createNewPost}>

@@ -18,9 +18,12 @@ export default function PostPage(){
         });
     }, []);
     
-    if (!postInfo) {
+    //If no information, send 
+    if (!postInfo) {    
         return '';
     }
+
+
     return (
         <div className="post-page">
             <h1>{postInfo.title}</h1>
@@ -37,8 +40,6 @@ export default function PostPage(){
                 </div>
             )
             }
-
-
             <div className="image">
                 <img src={`http://localhost:4000/${postInfo.cover}`} alt = ""/>    
             </div>

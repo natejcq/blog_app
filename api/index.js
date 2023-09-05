@@ -1,10 +1,10 @@
 const express = require('express');
-const app = express();
 const cors = require('cors');
 const mongoose = require('mongoose');
 const User = require('./models/User');
 const Post = require('./models/Post');
 const bcrypt = require('bcryptjs');
+const app = express();
 const jwt = require('jsonwebtoken');
 const cookieParser = require('cookie-parser');
 const fs = require('fs');
@@ -12,8 +12,8 @@ const fs = require('fs');
 const multer = require('multer');
 const uploadMiddleware  = multer({dest: './uploads'});
 
-const secret = 'asdfe45we45w345wegw345werjktjwertkj';
 const salt = bcrypt.genSaltSync(10);
+const secret = 'asdfe45we45w345wegw345werjktjwertkj';
 
 app.use(cors({credentials: true, origin: 'http://localhost:3000'}));
 app.use(express.json()); 
@@ -27,30 +27,23 @@ app.post('/register', async (req,res) => {
     try{
         const userDoc = await User.create({
             username:username, 
-            password:bcrypt.hashSync(password, salt)});
-        res.json({requestData:{username:username, password:password}});
+            password:bcrypt.hashSync(password, salt),
+        });
+        res.json(userDoc);
     }
     catch(err){
         res.status(400).json(err);
     }
 });
 
-app.get('/profile'  , (req, res) => {
-    const {token} = req.cookies;  
-    jwt.verify(token, secret, {}, (err, info) => {
-        if (err) throw err;
-        res.json(info);
-    }); 
-});
-
 app.post('/login', async (req, res) => {
     const { username, password } = req.body;
-    console.log('Received login request for username:', username); // Add this for debugging
+    console.log('Received login request for username:', username); 
 
     try {
         const userDoc = await User.findOne({ username });
         if (!userDoc) {
-            // User not found, return an error response
+            // User not found, return an error
             return res.status(404).json({ error: 'User not found' });
         }
         const passOk = bcrypt.compareSync(password, userDoc.password);
@@ -75,6 +68,14 @@ app.post('/login', async (req, res) => {
     }
 });
 
+app.get('/profile'  , (req, res) => {
+    const {token} = req.cookies;  
+    jwt.verify(token, secret, {}, (err, info) => {
+        if (err) throw err;
+        res.json(info);
+    }); 
+});
+
 app.post('/logout',  (req, res) => {
     res.cookie('token', '').json('ok');
 });
@@ -91,13 +92,43 @@ app.post('/post', uploadMiddleware.single('file'), async(req, res) => {
         if (err) throw err;
         const {title, summary, content} = req.body;
         const postDoc = await Post.create({
-            title: title,
-            summary: summary,
-            content: content,
+            title,
+            summary,
+            content,
             cover: newpath,
             author: info.id,
     });
     res.json(info);
+    });
+});
+
+app.put('/post', uploadMiddleware.single('file') ,async(req, res) => {
+    let newpath = null;
+    if(req.file) {
+        const {originalname, path} = req.file;
+        const parts = originalname.split('.');
+        const ext = parts[parts.length -1];
+        const newpath=path+"."+ext
+        fs.renameSync(path, newpath);
+    }
+
+    const {token} = req.cookies;
+    jwt.verify(token, secret, {}, async(err, info) => {
+        if(err) throw err;
+        const {id, title, summary, content} = req.body;
+        const postDoc = await Post.findById(id);
+        const isAuthor = JSON.stringify(postDoc.author) === JSON.stringify(info.id);
+        if(!isAuthor) {
+            res.status(400).json('You are not the author');
+        }     
+        await postDoc.updateOne({
+            title,
+            summary,
+            content,
+            cover: newpath ? newpath : postDoc.cover,
+             
+        })
+        res.json(postDoc);
     });
 });
 
