@@ -148,7 +148,42 @@ app.get('/post/:id', async(req, res) => {
     
 });
 
-app.listen(4000);
+
+
+app.listen(4000);app.delete('/post/:id', async (req, res) => {
+    const { id } = req.params;
+    const { token } = req.cookies;
+    
+    // Verify the JWT token to get the user's information
+    jwt.verify(token, secret, {}, async (err, info) => {
+        if (err) {
+            return res.status(401).json({ error: 'Unauthorized' });
+        }
+        
+        try {
+            // Find the post by ID
+            const postDoc = await Post.findById(id);
+            
+            if (!postDoc) {
+                return res.status(404).json({ error: 'Post not found' });
+            }
+            
+            // Check if the user is the author of the post
+            if (postDoc.author.toString() !== info.id) {
+                return res.status(403).json({ error: 'Forbidden' });
+            }
+            
+            // Delete the post
+            await postDoc.remove();
+            
+            return res.json({ message: 'Post deleted successfully' });
+        } catch (error) {
+            console.error(error);
+            return res.status(500).json({ error: 'Internal server error' });
+        }
+    });
+});
+
 
 //mongodb+srv://nathancardoso:<password>@cluster0.oihvcna.mongodb.net/?retryWrites=true&w=majority
 //mongodb password Stnm112m6FDO9nzr
