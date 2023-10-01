@@ -3,6 +3,7 @@ const cors = require('cors');
 const mongoose = require('mongoose');
 const User = require('./models/User');
 const Post = require('./models/Post');
+const CategoryModel = require('./models/Category');
 const bcrypt = require('bcryptjs');
 const app = express();
 const jwt = require('jsonwebtoken');
@@ -21,6 +22,22 @@ app.use(cookieParser());
 app.use('/uploads', express.static(__dirname + '/uploads'));
 
 mongoose.connect('mongodb+srv://nathancardoso:Stnm112m6FDO9nzr@cluster0.oihvcna.mongodb.net/?retryWrites=true&w=majority')
+
+//Route to fetch the categories
+app.get('/categories', async (req, res) => {
+    try{
+        //Adding predefined categories 
+        const predefinedCategories = [
+            { name: 'Sports' },
+            { name: 'Books' },
+            {name: 'News'},
+        ];
+        res.json(predefinedCategories);
+    } catch (error) {
+        console.error('Error fetching categories:', error);
+        res.status(500).json({error:'Server Error '})
+    }
+});
 
 app.post('/register', async (req,res) => {
     const {username, password} = req.body;
@@ -90,13 +107,15 @@ app.post('/post', uploadMiddleware.single('file'), async(req, res) => {
     const {token} = req.cookies;
     jwt.verify(token, secret, {}, async(err, info) => {
         if (err) throw err;
-        const {title, summary, content} = req.body;
+        const {title, summary, content, category} = req.body;
+
         const postDoc = await Post.create({
             title,
             summary,
             content,
             cover: newpath,
             author: info.id,
+            category: category,
     });
     res.json(info);
     });
@@ -147,8 +166,6 @@ app.get('/post/:id', async(req, res) => {
     res.json(postDoc); 
     
 });
-
-
 
 app.listen(4000);
 
